@@ -202,10 +202,6 @@
     }
 
     .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
       margin-bottom: 14px;
     }
 
@@ -215,13 +211,15 @@
     }
 
     .group-list,
-    .item-list {
+    .item-list,
+    .availability-list {
       display: grid;
       gap: 12px;
     }
 
     .group-card,
-    .item-card {
+    .item-card,
+    .availability-row {
       width: 100%;
       padding: 15px;
       border: 1px solid rgba(134, 188, 255, 0.22);
@@ -294,6 +292,11 @@
       outline: none;
     }
 
+    select[multiple] {
+      min-height: 118px;
+      padding: 10px 12px;
+    }
+
     textarea {
       min-height: 92px;
       padding: 12px;
@@ -360,7 +363,9 @@
     .modal.open { display: flex; }
 
     .modal-card {
-      width: min(100%, 520px);
+      width: min(100%, 560px);
+      max-height: 92vh;
+      overflow: auto;
       padding: 26px;
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -380,6 +385,24 @@
       justify-content: flex-end;
       gap: 12px;
       margin-top: 4px;
+    }
+
+    .availability-builder {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(134, 188, 255, 0.18);
+      border-radius: 10px;
+      background: rgba(2, 9, 19, 0.36);
+    }
+
+    .availability-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      line-height: 1.35;
     }
 
     @media (max-width: 980px) {
@@ -535,41 +558,8 @@
       <section class="grid group-home-grid">
         <article class="panel">
           <h2>Add Officials To Group</h2>
-          <form id="umpireForm">
-            <div class="two-column">
-              <label>
-                Official name
-                <input id="umpireName" type="text" required />
-              </label>
-              <label>
-                Contact
-                <input id="umpireContact" type="text" placeholder="Email or phone" />
-              </label>
-            </div>
-            <label>
-              Availability
-              <textarea id="umpireAvailability"></textarea>
-            </label>
-            <label>
-              Conflicts of interest
-              <textarea id="umpireConflicts"></textarea>
-            </label>
-            <label>
-              Abilities
-              <textarea id="umpireAbilities"></textarea>
-            </label>
-            <label>
-              Overall superiority
-              <select id="umpireSuperiority">
-                <option value="1">1 - Developing</option>
-                <option value="2">2 - Reliable</option>
-                <option value="3" selected>3 - Strong</option>
-                <option value="4">4 - Advanced</option>
-                <option value="5">5 - Elite</option>
-              </select>
-            </label>
-            <button class="btn" type="submit">Add Official</button>
-          </form>
+          <p>Use the button below to add a new official profile with contact details, seniority, and calendar availability.</p>
+          <button class="btn" id="openAddOfficial" type="button">Add Official</button>
           <div id="umpireMessage" class="message" aria-live="polite"></div>
         </article>
 
@@ -610,10 +600,9 @@
               </label>
             </div>
             <label>
-              Assign official
-              <select id="assignedUmpire">
-                <option value="">Unassigned</option>
-              </select>
+              Assign officials
+              <select id="assignedUmpire" multiple></select>
+              <span class="small muted">Hold Ctrl on Windows or Command on Mac to select more than one official.</span>
             </label>
             <button class="btn" type="submit">Add Game</button>
           </form>
@@ -764,10 +753,73 @@
     </div>
   </div>
 
+  <div class="modal" id="addOfficialModal" aria-hidden="true">
+    <div class="modal-card">
+      <h2>Add Official</h2>
+      <form id="umpireForm">
+        <label>
+          Name
+          <input id="umpireName" type="text" required />
+        </label>
+        <div class="two-column">
+          <label>
+            Email
+            <input id="umpireEmail" type="email" />
+          </label>
+          <label>
+            Phone number
+            <input id="umpirePhone" type="tel" />
+          </label>
+        </div>
+        <label>
+          Seniority
+          <select id="umpireSuperiority">
+            <option value="1">1 - Newer official</option>
+            <option value="2">2 - Developing</option>
+            <option value="3" selected>3 - Reliable</option>
+            <option value="4">4 - Senior</option>
+            <option value="5">5 - Most senior</option>
+          </select>
+        </label>
+
+        <div class="availability-builder">
+          <h3>Availability Calendar</h3>
+          <div class="three-column">
+            <label>
+              Date
+              <input id="availabilityDate" type="date" />
+            </label>
+            <label>
+              Start time
+              <input id="availabilityStart" type="time" />
+            </label>
+            <label>
+              End time
+              <input id="availabilityEnd" type="time" />
+            </label>
+          </div>
+          <label>
+            Notes
+            <input id="availabilityNote" type="text" placeholder="Example: can work plate, field 2 preferred" />
+          </label>
+          <button class="btn outline" id="addAvailabilitySlot" type="button">Add Availability Date</button>
+          <div id="availabilityDraftList" class="availability-list"></div>
+        </div>
+
+        <div id="officialModalMessage" class="message" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn outline" id="closeAddOfficial" type="button">Cancel</button>
+          <button class="btn" type="submit">Save Official</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     const STORAGE_KEY = "officialsEngineStandaloneDashboard";
     let groups = [];
     let activeGroupId = "";
+    let pendingAvailability = [];
 
     initDashboard();
 
@@ -830,7 +882,7 @@
       });
 
       const awaiting = games.filter(function (game) {
-        return !game.umpireId;
+        return gameOfficialIds(game).length === 0;
       });
 
       document.getElementById("groupCount").textContent = groups.length;
@@ -884,13 +936,11 @@
 
       const games = group.games || [];
       const umpires = group.umpires || [];
-
       const awaiting = games.filter(function (game) {
-        return !game.umpireId;
+        return gameOfficialIds(game).length === 0;
       });
-
       const assigned = games.filter(function (game) {
-        return game.umpireId;
+        return gameOfficialIds(game).length > 0;
       });
 
       document.getElementById("groupHomeTitle").textContent = group.name;
@@ -918,12 +968,9 @@
 
     function renderUmpireSelect(group) {
       const select = document.getElementById("assignedUmpire");
-
-      select.innerHTML =
-        '<option value="">Unassigned</option>' +
-        (group.umpires || []).map(function (umpire) {
-          return '<option value="' + umpire.id + '">' + escapeHtml(umpire.name) + '</option>';
-        }).join("");
+      select.innerHTML = (group.umpires || []).map(function (umpire) {
+        return '<option value="' + umpire.id + '">' + escapeHtml(umpire.name) + '</option>';
+      }).join("");
     }
 
     function renderRoster(group) {
@@ -931,14 +978,18 @@
 
       document.getElementById("rosterList").innerHTML = roster.length
         ? roster.map(function (umpire) {
+            const availabilitySlots = umpire.availabilitySlots || [];
+            const availabilityHtml = availabilitySlots.length
+              ? availabilitySlots.map(formatAvailabilitySlot).join("<br>")
+              : escapeHtml(umpire.availability || "Not listed");
+
             return [
               '<article class="item-card">',
               '<strong>' + escapeHtml(umpire.name) + '</strong>',
-              '<p class="small muted">' + escapeHtml(umpire.contact || "No contact listed") + '</p>',
-              '<p class="small">Availability: ' + escapeHtml(umpire.availability || "Not listed") + '</p>',
-              '<p class="small">Conflicts: ' + escapeHtml(umpire.conflicts || "None listed") + '</p>',
-              '<p class="small">Abilities: ' + escapeHtml(umpire.abilities || "Not listed") + '</p>',
-              '<span class="pill">Rating ' + escapeHtml(umpire.superiority || "3") + '</span>',
+              '<p class="small muted">Email: ' + escapeHtml(umpire.email || "Not listed") + '</p>',
+              '<p class="small muted">Phone: ' + escapeHtml(umpire.phone || "Not listed") + '</p>',
+              '<p class="small">Availability:<br>' + availabilityHtml + '</p>',
+              '<span class="pill">Seniority ' + escapeHtml(umpire.superiority || "3") + '</span>',
               '</article>'
             ].join("");
           }).join("")
@@ -954,10 +1005,11 @@
               '<article class="item-card">',
               '<strong>' + escapeHtml(game.teamOne) + ' vs ' + escapeHtml(game.teamTwo) + '</strong>',
               '<p class="small muted">' + escapeHtml(game.date || "Date TBD") + ' | ' + escapeHtml(game.time || "Time TBD") + ' | ' + escapeHtml(game.field || "Field TBD") + '</p>',
-              '<label class="small">Assign official',
-              '<select class="game-assign" data-game-id="' + game.id + '">',
-              assignmentOptions(group, game.umpireId),
+              '<label class="small">Assign officials',
+              '<select class="game-assign" data-game-id="' + game.id + '" multiple>',
+              assignmentOptions(group, gameOfficialIds(game)),
               '</select>',
+              '<span class="small muted">Hold Ctrl/Command to select more than one.</span>',
               '</label>',
               '</article>'
             ].join("");
@@ -967,17 +1019,14 @@
 
     function renderAssignedOfficials(group) {
       const assigned = (group.games || []).filter(function (game) {
-        return game.umpireId;
+        return gameOfficialIds(game).length > 0;
       });
 
       document.getElementById("assignedOfficialsList").innerHTML = assigned.length
         ? assigned.map(function (game) {
-            const umpire = (group.umpires || []).find(function (item) {
-              return item.id === game.umpireId;
-            });
-
+            const names = assignedOfficialNames(group, game);
             return '<article class="item-card"><strong>' +
-              escapeHtml(umpire ? umpire.name : "Unknown official") +
+              escapeHtml(names || "Unknown official") +
               '</strong><p class="small muted">' +
               escapeHtml(game.teamOne) +
               ' vs ' +
@@ -989,7 +1038,7 @@
 
     function renderAwaitingGames(group) {
       const awaiting = (group.games || []).filter(function (game) {
-        return !game.umpireId;
+        return gameOfficialIds(game).length === 0;
       });
 
       document.getElementById("awaitingGamesList").innerHTML = awaiting.length
@@ -1043,11 +1092,65 @@
         : '<div class="empty">No reports have been saved yet.</div>';
     }
 
-    function assignmentOptions(group, selectedId) {
-      return ['<option value="">Unassigned</option>'].concat((group.umpires || []).map(function (umpire) {
-        const selected = umpire.id === selectedId ? " selected" : "";
+    function gameOfficialIds(game) {
+      if (Array.isArray(game.umpireIds)) {
+        return game.umpireIds.filter(Boolean);
+      }
+
+      return game.umpireId ? [game.umpireId] : [];
+    }
+
+    function selectedValues(select) {
+      return Array.from(select.selectedOptions).map(function (option) {
+        return option.value;
+      }).filter(Boolean);
+    }
+
+    function assignedOfficialNames(group, game) {
+      const ids = gameOfficialIds(game);
+
+      return ids.map(function (id) {
+        const umpire = (group.umpires || []).find(function (item) {
+          return item.id === id;
+        });
+
+        return umpire ? umpire.name : "Unknown official";
+      }).join(", ");
+    }
+
+    function assignmentOptions(group, selectedIds) {
+      const ids = Array.isArray(selectedIds) ? selectedIds : selectedIds ? [selectedIds] : [];
+
+      return (group.umpires || []).map(function (umpire) {
+        const selected = ids.includes(umpire.id) ? " selected" : "";
         return '<option value="' + umpire.id + '"' + selected + '>' + escapeHtml(umpire.name) + '</option>';
-      })).join("");
+      }).join("");
+    }
+
+    function formatAvailabilitySlot(slot) {
+      const timeRange = [slot.start || "Any time", slot.end || ""].filter(Boolean).join(" - ");
+      const note = slot.note ? " | " + slot.note : "";
+      return escapeHtml((slot.date || "Date TBD") + " | " + timeRange + note);
+    }
+
+    function renderAvailabilityDraft() {
+      document.getElementById("availabilityDraftList").innerHTML = pendingAvailability.length
+        ? pendingAvailability.map(function (slot, index) {
+            return [
+              '<div class="availability-row">',
+              '<span>' + formatAvailabilitySlot(slot) + '</span>',
+              '<button class="btn outline remove-availability" type="button" data-index="' + index + '">Remove</button>',
+              '</div>'
+            ].join("");
+          }).join("")
+        : '<div class="empty">No availability dates added yet.</div>';
+    }
+
+    function resetOfficialModal() {
+      pendingAvailability = [];
+      document.getElementById("umpireForm").reset();
+      document.getElementById("umpireSuperiority").value = "3";
+      renderAvailabilityDraft();
     }
 
     function updateGroups() {
@@ -1084,6 +1187,7 @@
 
     document.getElementById("resetButton").addEventListener("click", function () {
       if (!confirm("Clear all saved dashboard data from this browser?")) return;
+
       localStorage.removeItem(STORAGE_KEY);
       groups = [];
       activeGroupId = "";
@@ -1100,6 +1204,47 @@
       document.getElementById("createGroupModal").classList.remove("open");
     });
 
+    document.getElementById("openAddOfficial").addEventListener("click", function () {
+      resetOfficialModal();
+      document.getElementById("addOfficialModal").classList.add("open");
+    });
+
+    document.getElementById("closeAddOfficial").addEventListener("click", function () {
+      document.getElementById("addOfficialModal").classList.remove("open");
+      resetOfficialModal();
+    });
+
+    document.getElementById("addAvailabilitySlot").addEventListener("click", function () {
+      const slot = {
+        date: document.getElementById("availabilityDate").value,
+        start: document.getElementById("availabilityStart").value,
+        end: document.getElementById("availabilityEnd").value,
+        note: document.getElementById("availabilityNote").value.trim()
+      };
+
+      if (!slot.date) {
+        setMessage("officialModalMessage", "Choose an availability date first.", "error");
+        return;
+      }
+
+      pendingAvailability.push(slot);
+
+      document.getElementById("availabilityDate").value = "";
+      document.getElementById("availabilityStart").value = "";
+      document.getElementById("availabilityEnd").value = "";
+      document.getElementById("availabilityNote").value = "";
+
+      renderAvailabilityDraft();
+    });
+
+    document.getElementById("availabilityDraftList").addEventListener("click", function (event) {
+      const button = event.target.closest(".remove-availability");
+      if (!button) return;
+
+      pendingAvailability.splice(Number(button.dataset.index), 1);
+      renderAvailabilityDraft();
+    });
+
     document.getElementById("groupSearch").addEventListener("input", renderGroupsView);
 
     document.getElementById("searchForm").addEventListener("submit", function (event) {
@@ -1109,6 +1254,7 @@
     document.getElementById("createdGroupsList").addEventListener("click", function (event) {
       const card = event.target.closest("[data-group-id]");
       if (!card) return;
+
       window.location.hash = "#group/" + card.dataset.groupId;
     });
 
@@ -1156,10 +1302,14 @@
           id: makeId(),
           groupId: group.id,
           name: document.getElementById("umpireName").value.trim(),
-          contact: document.getElementById("umpireContact").value.trim(),
-          availability: document.getElementById("umpireAvailability").value.trim(),
-          conflicts: document.getElementById("umpireConflicts").value.trim(),
-          abilities: document.getElementById("umpireAbilities").value.trim(),
+          email: document.getElementById("umpireEmail").value.trim(),
+          phone: document.getElementById("umpirePhone").value.trim(),
+          contact: [
+            document.getElementById("umpireEmail").value.trim(),
+            document.getElementById("umpirePhone").value.trim()
+          ].filter(Boolean).join(" | "),
+          availabilitySlots: pendingAvailability.slice(),
+          availability: pendingAvailability.map(formatAvailabilitySlot).join("; "),
           superiority: document.getElementById("umpireSuperiority").value,
           createdAt: new Date().toISOString()
         };
@@ -1171,11 +1321,11 @@
         group.umpires.push(umpire);
         updateGroups();
 
-        event.target.reset();
-        document.getElementById("umpireSuperiority").value = "3";
+        document.getElementById("addOfficialModal").classList.remove("open");
+        resetOfficialModal();
         setMessage("umpireMessage", "Official added.", "success");
       } catch (error) {
-        setMessage("umpireMessage", error.message, "error");
+        setMessage("officialModalMessage", error.message, "error");
       }
     });
 
@@ -1195,7 +1345,8 @@
           teamOne: document.getElementById("teamOne").value.trim(),
           teamTwo: document.getElementById("teamTwo").value.trim(),
           level: document.getElementById("gameLevel").value.trim(),
-          umpireId: document.getElementById("assignedUmpire").value,
+          umpireIds: selectedValues(document.getElementById("assignedUmpire")),
+          umpireId: "",
           source: "single",
           createdAt: new Date().toISOString()
         };
@@ -1240,6 +1391,7 @@
             teamOne: parts[3] || "Team 1",
             teamTwo: parts[4] || "Team 2",
             level: parts[5] || "",
+            umpireIds: [],
             umpireId: "",
             source: "bulk",
             createdAt: new Date().toISOString()
@@ -1270,7 +1422,8 @@
 
       if (!game) return;
 
-      game.umpireId = event.target.value;
+      game.umpireIds = selectedValues(event.target);
+      game.umpireId = game.umpireIds[0] || "";
       updateGroups();
     });
 
