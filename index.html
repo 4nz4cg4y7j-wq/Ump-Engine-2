@@ -15,6 +15,7 @@
       --blue: #2478ff;
       --blue-2: #0f58d9;
       --green: #57d980;
+      --violet: #9663ff;
       --danger: #ff6b6b;
       --shadow: 0 24px 80px rgba(0, 0, 0, 0.44);
     }
@@ -33,11 +34,13 @@
     }
 
     a { color: inherit; text-decoration: none; }
+
     button, input, select, textarea { font: inherit; }
 
     header {
       border-bottom: 1px solid rgba(100, 164, 255, 0.12);
       background: rgba(2, 9, 19, 0.92);
+      backdrop-filter: blur(10px);
     }
 
     .nav {
@@ -68,8 +71,7 @@
       font-weight: 700;
     }
 
-    .menu a:hover,
-    .menu a.active { color: var(--blue); }
+    .menu a:hover, .menu a.active { color: var(--blue); }
 
     .btn {
       display: inline-flex;
@@ -110,14 +112,14 @@
       margin-bottom: 24px;
     }
 
-    h1 {
+    .page-head h1 {
       margin: 0 0 8px;
       font-size: clamp(2rem, 4vw, 3.5rem);
       line-height: 1.08;
       text-transform: uppercase;
     }
 
-    h1 span { color: var(--blue); }
+    .page-head h1 span { color: var(--blue); }
 
     .page-head p {
       max-width: 760px;
@@ -137,30 +139,19 @@
       margin-bottom: 24px;
     }
 
-    .groups-layout {
-      grid-template-columns: minmax(0, 1fr) 320px;
-      align-items: start;
-    }
+    .dashboard-tools { grid-template-columns: repeat(3, 1fr); }
+    .groups-layout { grid-template-columns: minmax(0, 1fr) 320px; align-items: start; }
+    .group-columns { grid-template-columns: repeat(2, 1fr); }
+    .group-home-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
 
-    .group-columns {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .group-home-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      align-items: start;
-    }
-
-    .metric,
-    .tool-card,
-    .panel {
-      padding: 22px;
+    .metric, .tool-card, .panel {
       border: 1px solid var(--line);
       border-radius: 12px;
       background:
         linear-gradient(145deg, rgba(22, 58, 98, 0.38), rgba(3, 13, 27, 0.92)),
         var(--panel);
       box-shadow: var(--shadow);
+      padding: 22px;
     }
 
     .metric strong {
@@ -171,8 +162,7 @@
       line-height: 1;
     }
 
-    .metric span,
-    .muted { color: var(--muted); }
+    .metric span, .muted { color: var(--muted); }
 
     .tool-card {
       display: grid;
@@ -187,21 +177,22 @@
         var(--panel);
     }
 
-    .tool-card strong,
-    .panel h2,
-    .panel h3 {
+    .tool-card strong, .panel h2, .panel h3 {
       margin: 0;
       text-transform: uppercase;
     }
 
-    .tool-card span,
-    .panel p {
+    .tool-card span, .panel p {
       margin: 0;
       color: var(--muted);
       line-height: 1.45;
     }
 
     .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
       margin-bottom: 14px;
     }
 
@@ -210,16 +201,12 @@
       text-transform: uppercase;
     }
 
-    .group-list,
-    .item-list,
-    .availability-list {
+    .group-list, .item-list {
       display: grid;
       gap: 12px;
     }
 
-    .group-card,
-    .item-card,
-    .availability-row {
+    .group-card, .item-card {
       width: 100%;
       padding: 15px;
       border: 1px solid rgba(134, 188, 255, 0.22);
@@ -236,8 +223,7 @@
       background: rgba(36, 120, 255, 0.16);
     }
 
-    .item-card strong,
-    .group-card strong {
+    .item-card strong, .group-card strong {
       display: block;
       margin-bottom: 5px;
     }
@@ -267,6 +253,20 @@
       line-height: 1.38;
     }
 
+    .inline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .inline-actions .btn {
+      min-height: 38px;
+      padding: 0 13px;
+      font-size: 0.9rem;
+      box-shadow: none;
+    }
+
     form {
       display: grid;
       gap: 14px;
@@ -279,9 +279,7 @@
       font-weight: 800;
     }
 
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
       min-height: 44px;
       padding: 0 12px;
@@ -292,11 +290,6 @@
       outline: none;
     }
 
-    select[multiple] {
-      min-height: 118px;
-      padding: 10px 12px;
-    }
-
     textarea {
       min-height: 92px;
       padding: 12px;
@@ -304,21 +297,36 @@
       line-height: 1.45;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: var(--blue);
       box-shadow: 0 0 0 3px rgba(36, 120, 255, 0.18);
     }
 
-    .two-column,
-    .three-column {
+    .two-column, .three-column, .role-grid {
       display: grid;
       gap: 12px;
     }
 
     .two-column { grid-template-columns: repeat(2, 1fr); }
     .three-column { grid-template-columns: repeat(3, 1fr); }
+
+    .role-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    .role-grid label { font-size: 0.84rem; }
+
+    .field-heading {
+      margin: 16px 0 0;
+      padding: 10px 12px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      color: #fff;
+      background: rgba(36, 120, 255, 0.14);
+      text-transform: uppercase;
+      font-size: 1rem;
+    }
 
     .message {
       display: none;
@@ -363,7 +371,7 @@
     .modal.open { display: flex; }
 
     .modal-card {
-      width: min(100%, 560px);
+      width: min(100%, 620px);
       max-height: 92vh;
       overflow: auto;
       padding: 26px;
@@ -396,19 +404,26 @@
       background: rgba(2, 9, 19, 0.36);
     }
 
+    .availability-list {
+      display: grid;
+      gap: 8px;
+    }
+
     .availability-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(134, 188, 255, 0.18);
+      border-radius: 8px;
+      background: rgba(2, 9, 19, 0.48);
       color: var(--muted);
       line-height: 1.35;
     }
 
     @media (max-width: 980px) {
-      .nav,
-      .page-head,
-      .modal-actions {
+      .nav, .page-head, .modal-actions {
         flex-direction: column;
         align-items: stretch;
       }
@@ -425,9 +440,11 @@
       }
 
       .metrics,
+      .dashboard-tools,
       .groups-layout,
       .group-columns,
       .group-home-grid,
+      .role-grid,
       .two-column,
       .three-column {
         grid-template-columns: 1fr;
@@ -461,26 +478,14 @@
         </div>
       </div>
 
-      <section class="grid metrics" aria-label="Dashboard summary">
-        <article class="metric">
-          <strong id="groupCount">0</strong>
-          <span>Groups created</span>
-        </article>
-        <article class="metric">
-          <strong id="joinedCount">0</strong>
-          <span>Groups joined</span>
-        </article>
-        <article class="metric">
-          <strong id="gameCount">0</strong>
-          <span>Games</span>
-        </article>
-        <article class="metric">
-          <strong id="awaitingCount">0</strong>
-          <span>Awaiting assignment</span>
-        </article>
+      <section class="grid metrics">
+        <article class="metric"><strong id="groupCount">0</strong><span>Groups created</span></article>
+        <article class="metric"><strong id="joinedCount">0</strong><span>Groups joined</span></article>
+        <article class="metric"><strong id="gameCount">0</strong><span>Games</span></article>
+        <article class="metric"><strong id="awaitingCount">0</strong><span>Awaiting assignment</span></article>
       </section>
 
-      <section class="grid">
+      <section class="grid dashboard-tools">
         <a class="tool-card" href="#groups">
           <strong>Groups</strong>
           <span>Open your joined and created groups. All umpire assigning tools live inside each group.</span>
@@ -500,16 +505,12 @@
       <section class="grid groups-layout">
         <div class="grid group-columns">
           <section class="panel">
-            <div class="section-title">
-              <h2>Groups Joined</h2>
-            </div>
+            <div class="section-title"><h2>Groups Joined</h2></div>
             <div id="joinedGroupsList" class="group-list"></div>
           </section>
 
           <section class="panel">
-            <div class="section-title">
-              <h2>Groups Created</h2>
-            </div>
+            <div class="section-title"><h2>Groups Created</h2></div>
             <div id="createdGroupsList" class="group-list"></div>
           </section>
         </div>
@@ -533,32 +534,23 @@
           <h1 id="groupHomeTitle">Group Home</h1>
           <p id="groupHomeMeta"></p>
         </div>
-        <a class="btn outline" href="#groups">Back To Groups</a>
+        <div class="inline-actions">
+          <button class="btn" id="exportMasterSchedule" type="button">Export Master Schedule</button>
+          <a class="btn outline" href="#groups">Back To Groups</a>
+        </div>
       </div>
 
-      <section class="grid metrics" aria-label="Group summary">
-        <article class="metric">
-          <strong id="officialsToAssignCount">0</strong>
-          <span>Officials to assign</span>
-        </article>
-        <article class="metric">
-          <strong id="upcomingScheduleCount">0</strong>
-          <span>Upcoming schedule</span>
-        </article>
-        <article class="metric">
-          <strong id="assignedOfficialsCount">0</strong>
-          <span>Assigned officials</span>
-        </article>
-        <article class="metric">
-          <strong id="awaitingGamesCount">0</strong>
-          <span>Games awaiting assignment</span>
-        </article>
+      <section class="grid metrics">
+        <article class="metric"><strong id="officialsToAssignCount">0</strong><span>Officials to assign</span></article>
+        <article class="metric"><strong id="upcomingScheduleCount">0</strong><span>Upcoming schedule</span></article>
+        <article class="metric"><strong id="assignedOfficialsCount">0</strong><span>Assigned officials</span></article>
+        <article class="metric"><strong id="awaitingGamesCount">0</strong><span>Games awaiting assignment</span></article>
       </section>
 
       <section class="grid group-home-grid">
         <article class="panel">
           <h2>Add Officials To Group</h2>
-          <p>Use the button below to add a new official profile with contact details, seniority, and calendar availability.</p>
+          <p>Use the button below to add or edit official profiles with seniority and calendar availability.</p>
           <button class="btn" id="openAddOfficial" type="button">Add Official</button>
           <div id="umpireMessage" class="message" aria-live="polite"></div>
         </article>
@@ -572,38 +564,16 @@
           <h2>Add Games To Be Umpired</h2>
           <form id="gameForm">
             <div class="three-column">
-              <label>
-                Date
-                <input id="gameDate" type="date" required />
-              </label>
-              <label>
-                Time
-                <input id="gameTime" type="time" required />
-              </label>
-              <label>
-                Field
-                <input id="gameField" type="text" required />
-              </label>
+              <label>Date <input id="gameDate" type="date" required /></label>
+              <label>Time <input id="gameTime" type="time" required /></label>
+              <label>Field <input id="gameField" type="text" required /></label>
             </div>
             <div class="three-column">
-              <label>
-                Team 1
-                <input id="teamOne" type="text" required />
-              </label>
-              <label>
-                Team 2
-                <input id="teamTwo" type="text" required />
-              </label>
-              <label>
-                Level
-                <input id="gameLevel" type="text" />
-              </label>
+              <label>Team 1 <input id="teamOne" type="text" required /></label>
+              <label>Team 2 <input id="teamTwo" type="text" required /></label>
+              <label>Level <input id="gameLevel" type="text" /></label>
             </div>
-            <label>
-              Assign officials
-              <select id="assignedUmpire" multiple></select>
-              <span class="small muted">Hold Ctrl on Windows or Command on Mac to select more than one official.</span>
-            </label>
+            <p class="small muted">After adding the game, assign Crew Chief and Officials 1-6 in Upcoming Schedule.</p>
             <button class="btn" type="submit">Add Game</button>
           </form>
           <div id="gameMessage" class="message" aria-live="polite"></div>
@@ -614,7 +584,7 @@
           <form id="bulkGameForm">
             <label>
               Copied schedule
-              <textarea id="bulkGamesText" placeholder="Paste one game per line: 2026-06-15, 9:00 AM, Field 1, Tigers, Bears, 12U"></textarea>
+              <textarea id="bulkGamesText" placeholder="Paste from Tourney Machine or GameChanger. Works best with columns: Date, Time, Field, Team 1, Team 2, Level."></textarea>
             </label>
             <button class="btn" type="submit">Import Games</button>
           </form>
@@ -637,75 +607,15 @@
         </article>
 
         <article class="panel">
-          <h2>Report Official Calling Out</h2>
-          <form class="report-form" data-report-type="official_call_out">
-            <label>
-              Title
-              <input name="title" type="text" placeholder="Official called out" required />
-            </label>
-            <label>
-              Details
-              <textarea name="details" placeholder="Who called out, when, and what game/event it affects"></textarea>
-            </label>
-            <button class="btn" type="submit">Save Report</button>
-          </form>
-        </article>
-
-        <article class="panel">
-          <h2>Report Ejection Or Removal</h2>
-          <form class="report-form" data-report-type="ejection_or_removal">
-            <label>
-              Title
-              <input name="title" type="text" placeholder="Ejection or spectator removal" required />
-            </label>
-            <label>
-              Details
-              <textarea name="details" placeholder="Who was removed/ejected, reason, game, and notes"></textarea>
-            </label>
-            <button class="btn" type="submit">Save Report</button>
-          </form>
-        </article>
-
-        <article class="panel">
-          <h2>General Report</h2>
-          <form class="report-form" data-report-type="general">
-            <label>
-              Title
-              <input name="title" type="text" placeholder="General report" required />
-            </label>
-            <label>
-              Details
-              <textarea name="details" placeholder="Anything important the assigner needs recorded"></textarea>
-            </label>
-            <button class="btn" type="submit">Save Report</button>
-          </form>
-        </article>
-
-        <article class="panel">
           <h2>Add Event</h2>
           <form id="eventForm">
-            <label>
-              Event title
-              <input id="eventTitle" type="text" required />
-            </label>
+            <label>Event title <input id="eventTitle" type="text" required /></label>
             <div class="three-column">
-              <label>
-                Date
-                <input id="eventDate" type="date" />
-              </label>
-              <label>
-                Time
-                <input id="eventTime" type="time" />
-              </label>
-              <label>
-                Location
-                <input id="eventLocation" type="text" />
-              </label>
+              <label>Date <input id="eventDate" type="date" /></label>
+              <label>Time <input id="eventTime" type="time" /></label>
+              <label>Location <input id="eventLocation" type="text" /></label>
             </div>
-            <label>
-              Notes
-              <textarea id="eventNotes"></textarea>
-            </label>
+            <label>Notes <textarea id="eventNotes"></textarea></label>
             <button class="btn" type="submit">Add Event</button>
           </form>
           <div id="eventMessage" class="message" aria-live="polite"></div>
@@ -714,6 +624,33 @@
         <article class="panel">
           <h2>Events</h2>
           <div id="eventsList" class="item-list"></div>
+        </article>
+
+        <article class="panel">
+          <h2>Report Official Calling Out</h2>
+          <form class="report-form" data-report-type="official_call_out">
+            <label>Title <input name="title" type="text" placeholder="Official called out" required /></label>
+            <label>Details <textarea name="details" placeholder="Who called out, when, and what game/event it affects"></textarea></label>
+            <button class="btn" type="submit">Save Report</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <h2>Report Ejection Or Removal</h2>
+          <form class="report-form" data-report-type="ejection_or_removal">
+            <label>Title <input name="title" type="text" placeholder="Ejection or spectator removal" required /></label>
+            <label>Details <textarea name="details" placeholder="Who was removed/ejected, reason, game, and notes"></textarea></label>
+            <button class="btn" type="submit">Save Report</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <h2>General Report</h2>
+          <form class="report-form" data-report-type="general">
+            <label>Title <input name="title" type="text" placeholder="General report" required /></label>
+            <label>Details <textarea name="details" placeholder="Anything important the assigner needs recorded"></textarea></label>
+            <button class="btn" type="submit">Save Report</button>
+          </form>
         </article>
 
         <article class="panel">
@@ -729,14 +666,8 @@
     <div class="modal-card">
       <h2>Create Group</h2>
       <form id="createGroupForm">
-        <label>
-          Group name
-          <input id="groupName" type="text" required />
-        </label>
-        <label>
-          Sport name
-          <input id="groupSport" type="text" required />
-        </label>
+        <label>Group name <input id="groupName" type="text" required /></label>
+        <label>Sport name <input id="groupSport" type="text" required /></label>
         <label>
           Group type
           <select id="groupType" required>
@@ -755,22 +686,15 @@
 
   <div class="modal" id="addOfficialModal" aria-hidden="true">
     <div class="modal-card">
-      <h2>Add Official</h2>
+      <h2 id="officialModalTitle">Add Official</h2>
       <form id="umpireForm">
-        <label>
-          Name
-          <input id="umpireName" type="text" required />
-        </label>
+        <label>Name <input id="umpireName" type="text" required /></label>
+
         <div class="two-column">
-          <label>
-            Email
-            <input id="umpireEmail" type="email" />
-          </label>
-          <label>
-            Phone number
-            <input id="umpirePhone" type="tel" />
-          </label>
+          <label>Email <input id="umpireEmail" type="email" /></label>
+          <label>Phone number <input id="umpirePhone" type="tel" /></label>
         </div>
+
         <label>
           Seniority
           <select id="umpireSuperiority">
@@ -785,23 +709,11 @@
         <div class="availability-builder">
           <h3>Availability Calendar</h3>
           <div class="three-column">
-            <label>
-              Date
-              <input id="availabilityDate" type="date" />
-            </label>
-            <label>
-              Start time
-              <input id="availabilityStart" type="time" />
-            </label>
-            <label>
-              End time
-              <input id="availabilityEnd" type="time" />
-            </label>
+            <label>Date <input id="availabilityDate" type="date" /></label>
+            <label>Start time <input id="availabilityStart" type="time" /></label>
+            <label>End time <input id="availabilityEnd" type="time" /></label>
           </div>
-          <label>
-            Notes
-            <input id="availabilityNote" type="text" placeholder="Example: can work plate, field 2 preferred" />
-          </label>
+          <label>Notes <input id="availabilityNote" type="text" placeholder="Example: can work plate, field 2 preferred" /></label>
           <button class="btn outline" id="addAvailabilitySlot" type="button">Add Availability Date</button>
           <div id="availabilityDraftList" class="availability-list"></div>
         </div>
@@ -820,13 +732,22 @@
     let groups = [];
     let activeGroupId = "";
     let pendingAvailability = [];
+    let editingOfficialId = "";
+
+    const CREW_ROLES = [
+      { key: "crewChief", label: "Crew Chief" },
+      { key: "official1", label: "Official 1" },
+      { key: "official2", label: "Official 2" },
+      { key: "official3", label: "Official 3" },
+      { key: "official4", label: "Official 4" },
+      { key: "official5", label: "Official 5" },
+      { key: "official6", label: "Official 6" }
+    ];
 
     initDashboard();
 
     function makeId() {
-      if (window.crypto && window.crypto.randomUUID) {
-        return window.crypto.randomUUID();
-      }
+      if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
       return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
     }
 
@@ -849,14 +770,8 @@
 
     function route() {
       const hash = window.location.hash || "#dashboard";
-
-      document.querySelectorAll(".view").forEach(function (view) {
-        view.classList.remove("active");
-      });
-
-      document.querySelectorAll("[data-nav]").forEach(function (link) {
-        link.classList.remove("active");
-      });
+      document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+      document.querySelectorAll("[data-nav]").forEach(link => link.classList.remove("active"));
 
       if (hash.startsWith("#group/")) {
         activeGroupId = hash.replace("#group/", "");
@@ -876,34 +791,31 @@
       document.querySelector('[data-nav="dashboard"]').classList.add("active");
     }
 
-    function renderAll() {
-      const games = groups.flatMap(function (group) {
-        return group.games || [];
-      });
+    function activeGroup() {
+      return groups.find(group => group.id === activeGroupId) || null;
+    }
 
-      const awaiting = games.filter(function (game) {
-        return gameOfficialIds(game).length === 0;
-      });
+    function renderAll() {
+      const games = groups.flatMap(group => group.games || []);
+      const awaiting = games.filter(game => gameOfficialIds(game).length === 0);
 
       document.getElementById("groupCount").textContent = groups.length;
       document.getElementById("joinedCount").textContent = 0;
       document.getElementById("gameCount").textContent = games.length;
       document.getElementById("awaitingCount").textContent = awaiting.length;
-
       renderGroupsView();
     }
 
     function renderGroupsView() {
       const search = document.getElementById("groupSearch")?.value.trim().toLowerCase() || "";
-
-      const created = groups.filter(function (group) {
+      const created = groups.filter(group => {
         return !search ||
           group.name.toLowerCase().includes(search) ||
           group.sport.toLowerCase().includes(search);
       });
 
       document.getElementById("joinedGroupsList").innerHTML =
-        '<div class="empty">No joined groups yet. Joined groups will appear here when invite/membership tools are added.</div>';
+        '<div class="empty">No joined groups yet. Joined groups will appear here when invite tools are added.</div>';
 
       document.getElementById("createdGroupsList").innerHTML = created.length
         ? created.map(groupCard).join("")
@@ -920,15 +832,8 @@
       ].join("");
     }
 
-    function activeGroup() {
-      return groups.find(function (group) {
-        return group.id === activeGroupId;
-      }) || null;
-    }
-
     function renderGroupHome() {
       const group = activeGroup();
-
       if (!group) {
         window.location.hash = "#groups";
         return;
@@ -936,28 +841,18 @@
 
       const games = group.games || [];
       const umpires = group.umpires || [];
-      const awaiting = games.filter(function (game) {
-        return gameOfficialIds(game).length === 0;
-      });
-      const assigned = games.filter(function (game) {
-        return gameOfficialIds(game).length > 0;
-      });
+      const awaiting = games.filter(game => gameOfficialIds(game).length === 0);
+      const assigned = games.filter(game => gameOfficialIds(game).length > 0);
 
       document.getElementById("groupHomeTitle").textContent = group.name;
       document.getElementById("groupHomeMeta").innerHTML =
-        escapeHtml(group.sport) +
-        ' <span class="pill ' +
-        (group.type === "active" ? "blue" : "") +
-        '">' +
-        escapeHtml(capitalize(group.type || "static")) +
-        "</span>";
+        escapeHtml(group.sport) + ' <span class="pill ' + (group.type === "active" ? "blue" : "") + '">' + escapeHtml(capitalize(group.type || "static")) + '</span>';
 
       document.getElementById("officialsToAssignCount").textContent = umpires.length;
       document.getElementById("upcomingScheduleCount").textContent = games.length;
       document.getElementById("assignedOfficialsCount").textContent = assigned.length;
       document.getElementById("awaitingGamesCount").textContent = awaiting.length;
 
-      renderUmpireSelect(group);
       renderRoster(group);
       renderSchedule(group);
       renderAssignedOfficials(group);
@@ -966,22 +861,15 @@
       renderReports(group);
     }
 
-    function renderUmpireSelect(group) {
-      const select = document.getElementById("assignedUmpire");
-      select.innerHTML = (group.umpires || []).map(function (umpire) {
-        return '<option value="' + umpire.id + '">' + escapeHtml(umpire.name) + '</option>';
-      }).join("");
-    }
-
     function renderRoster(group) {
       const roster = group.umpires || [];
 
       document.getElementById("rosterList").innerHTML = roster.length
-        ? roster.map(function (umpire) {
-            const availabilitySlots = umpire.availabilitySlots || [];
-            const availabilityHtml = availabilitySlots.length
-              ? availabilitySlots.map(formatAvailabilitySlot).join("<br>")
-              : escapeHtml(umpire.availability || "Not listed");
+        ? roster.map(umpire => {
+            const slots = umpire.availabilitySlots || [];
+            const availabilityHtml = slots.length
+              ? slots.map(formatAvailabilitySlot).join("<br>")
+              : "Not listed";
 
             return [
               '<article class="item-card">',
@@ -990,6 +878,7 @@
               '<p class="small muted">Phone: ' + escapeHtml(umpire.phone || "Not listed") + '</p>',
               '<p class="small">Availability:<br>' + availabilityHtml + '</p>',
               '<span class="pill">Seniority ' + escapeHtml(umpire.superiority || "3") + '</span>',
+              '<div class="inline-actions"><button class="btn outline edit-official" type="button" data-official-id="' + umpire.id + '">Edit Official</button></div>',
               '</article>'
             ].join("");
           }).join("")
@@ -997,61 +886,54 @@
     }
 
     function renderSchedule(group) {
-      const games = group.games || [];
+      const games = sortedGamesByField(group.games || []);
+      const fieldGroups = groupGamesByField(games);
 
       document.getElementById("scheduleList").innerHTML = games.length
-        ? games.map(function (game) {
+        ? Object.keys(fieldGroups).map(field => {
             return [
-              '<article class="item-card">',
-              '<strong>' + escapeHtml(game.teamOne) + ' vs ' + escapeHtml(game.teamTwo) + '</strong>',
-              '<p class="small muted">' + escapeHtml(game.date || "Date TBD") + ' | ' + escapeHtml(game.time || "Time TBD") + ' | ' + escapeHtml(game.field || "Field TBD") + '</p>',
-              '<label class="small">Assign officials',
-              '<select class="game-assign" data-game-id="' + game.id + '" multiple>',
-              assignmentOptions(group, gameOfficialIds(game)),
-              '</select>',
-              '<span class="small muted">Hold Ctrl/Command to select more than one.</span>',
-              '</label>',
-              '</article>'
+              '<h3 class="field-heading">' + escapeHtml(field) + '</h3>',
+              fieldGroups[field].map(game => {
+                return [
+                  '<article class="item-card">',
+                  '<strong>' + escapeHtml(game.teamOne) + ' vs ' + escapeHtml(game.teamTwo) + '</strong>',
+                  '<p class="small muted">' + escapeHtml(game.date || "Date TBD") + ' | ' + escapeHtml(game.time || "Time TBD") + ' | ' + escapeHtml(game.field || "Field TBD") + ' | ' + escapeHtml(game.level || "Level TBD") + '</p>',
+                  '<div class="role-grid">',
+                  CREW_ROLES.map(role => {
+                    return [
+                      '<label>',
+                      escapeHtml(role.label),
+                      '<select class="game-role-assign" data-game-id="' + game.id + '" data-role="' + role.key + '">',
+                      assignmentOptions(group, game, role.key),
+                      '</select>',
+                      '</label>'
+                    ].join("");
+                  }).join(""),
+                  '</div>',
+                  '</article>'
+                ].join("");
+              }).join("")
             ].join("");
           }).join("")
         : '<div class="empty">No games have been added yet.</div>';
     }
 
     function renderAssignedOfficials(group) {
-      const assigned = (group.games || []).filter(function (game) {
-        return gameOfficialIds(game).length > 0;
-      });
+      const assigned = (group.games || []).filter(game => gameOfficialIds(game).length > 0);
 
       document.getElementById("assignedOfficialsList").innerHTML = assigned.length
-        ? assigned.map(function (game) {
-            const names = assignedOfficialNames(group, game);
-            return '<article class="item-card"><strong>' +
-              escapeHtml(names || "Unknown official") +
-              '</strong><p class="small muted">' +
-              escapeHtml(game.teamOne) +
-              ' vs ' +
-              escapeHtml(game.teamTwo) +
-              '</p></article>';
+        ? sortedGamesByField(assigned).map(game => {
+            return '<article class="item-card"><strong>' + escapeHtml(game.teamOne) + ' vs ' + escapeHtml(game.teamTwo) + '</strong><p class="small muted">' + escapeHtml(assignedOfficialNames(group, game)) + '</p></article>';
           }).join("")
         : '<div class="empty">No officials have been assigned yet.</div>';
     }
 
     function renderAwaitingGames(group) {
-      const awaiting = (group.games || []).filter(function (game) {
-        return gameOfficialIds(game).length === 0;
-      });
+      const awaiting = (group.games || []).filter(game => gameOfficialIds(game).length === 0);
 
       document.getElementById("awaitingGamesList").innerHTML = awaiting.length
-        ? awaiting.map(function (game) {
-            return '<article class="item-card"><strong>' +
-              escapeHtml(game.teamOne) +
-              ' vs ' +
-              escapeHtml(game.teamTwo) +
-              '</strong><p class="small muted">' +
-              escapeHtml(game.date || "Date TBD") +
-              ' | ' +
-              escapeHtml(game.field || "Field TBD") +
-              '</p></article>';
+        ? sortedGamesByField(awaiting).map(game => {
+            return '<article class="item-card"><strong>' + escapeHtml(game.teamOne) + ' vs ' + escapeHtml(game.teamTwo) + '</strong><p class="small muted">' + escapeHtml(game.date || "Date TBD") + ' | ' + escapeHtml(game.time || "Time TBD") + ' | ' + escapeHtml(game.field || "Field TBD") + '</p></article>';
           }).join("")
         : '<div class="empty">No games are awaiting assignment.</div>';
     }
@@ -1060,18 +942,8 @@
       const events = group.events || [];
 
       document.getElementById("eventsList").innerHTML = events.length
-        ? events.map(function (event) {
-            return '<article class="item-card"><strong>' +
-              escapeHtml(event.title) +
-              '</strong><p class="small muted">' +
-              escapeHtml(event.eventDate || "Date TBD") +
-              ' | ' +
-              escapeHtml(event.eventTime || "Time TBD") +
-              ' | ' +
-              escapeHtml(event.location || "Location TBD") +
-              '</p><p class="small">' +
-              escapeHtml(event.notes || "") +
-              '</p></article>';
+        ? events.map(event => {
+            return '<article class="item-card"><strong>' + escapeHtml(event.title) + '</strong><p class="small muted">' + escapeHtml(event.eventDate || "Date TBD") + ' | ' + escapeHtml(event.eventTime || "Time TBD") + ' | ' + escapeHtml(event.location || "Location TBD") + '</p><p class="small">' + escapeHtml(event.notes || "") + '</p></article>';
           }).join("")
         : '<div class="empty">No events have been added yet.</div>';
     }
@@ -1080,51 +952,284 @@
       const reports = group.reports || [];
 
       document.getElementById("reportsList").innerHTML = reports.length
-        ? reports.map(function (report) {
-            return '<article class="item-card"><strong>' +
-              escapeHtml(report.title) +
-              '</strong><p class="small muted">' +
-              escapeHtml(report.reportType) +
-              '</p><p class="small">' +
-              escapeHtml(report.details || "") +
-              '</p></article>';
+        ? reports.map(report => {
+            return '<article class="item-card"><strong>' + escapeHtml(report.title) + '</strong><p class="small muted">' + escapeHtml(report.reportType) + '</p><p class="small">' + escapeHtml(report.details || "") + '</p></article>';
           }).join("")
         : '<div class="empty">No reports have been saved yet.</div>';
     }
 
-    function gameOfficialIds(game) {
-      if (Array.isArray(game.umpireIds)) {
-        return game.umpireIds.filter(Boolean);
-      }
-
-      return game.umpireId ? [game.umpireId] : [];
+    function emptyAssignments() {
+      return CREW_ROLES.reduce((assignments, role) => {
+        assignments[role.key] = "";
+        return assignments;
+      }, {});
     }
 
-    function selectedValues(select) {
-      return Array.from(select.selectedOptions).map(function (option) {
-        return option.value;
-      }).filter(Boolean);
+    function normalizeGameAssignments(game) {
+      if (!game.assignments) {
+        game.assignments = emptyAssignments();
+
+        const oldIds = Array.isArray(game.umpireIds)
+          ? game.umpireIds.filter(Boolean)
+          : game.umpireId
+            ? [game.umpireId]
+            : [];
+
+        oldIds.slice(0, CREW_ROLES.length).forEach((officialId, index) => {
+          game.assignments[CREW_ROLES[index].key] = officialId;
+        });
+      }
+
+      CREW_ROLES.forEach(role => {
+        if (!Object.prototype.hasOwnProperty.call(game.assignments, role.key)) {
+          game.assignments[role.key] = "";
+        }
+      });
+
+      return game.assignments;
+    }
+
+    function gameOfficialIds(game) {
+      const assignments = normalizeGameAssignments(game);
+      return [...new Set(CREW_ROLES.map(role => assignments[role.key]).filter(Boolean))];
     }
 
     function assignedOfficialNames(group, game) {
-      const ids = gameOfficialIds(game);
+      const assignments = normalizeGameAssignments(game);
 
-      return ids.map(function (id) {
-        const umpire = (group.umpires || []).find(function (item) {
-          return item.id === id;
-        });
-
-        return umpire ? umpire.name : "Unknown official";
-      }).join(", ");
+      return CREW_ROLES.map(role => {
+        const officialId = assignments[role.key];
+        if (!officialId) return "";
+        const umpire = findOfficial(group, officialId);
+        return role.label + ": " + (umpire ? umpire.name : "Unknown official");
+      }).filter(Boolean).join(", ");
     }
 
-    function assignmentOptions(group, selectedIds) {
-      const ids = Array.isArray(selectedIds) ? selectedIds : selectedIds ? [selectedIds] : [];
+    function assignmentOptions(group, game, roleKey) {
+      const assignments = normalizeGameAssignments(game);
+      const currentId = assignments[roleKey] || "";
+      const options = ['<option value="">Unassigned</option>'];
 
-      return (group.umpires || []).map(function (umpire) {
-        const selected = ids.includes(umpire.id) ? " selected" : "";
-        return '<option value="' + umpire.id + '"' + selected + '>' + escapeHtml(umpire.name) + '</option>';
-      }).join("");
+      sortedOfficialsBySeniority(group.umpires || []).forEach(umpire => {
+        const assignedToAnotherRole = Object.keys(assignments).some(key => {
+          return key !== roleKey && assignments[key] === umpire.id;
+        });
+
+        const unavailable = !isOfficialAvailableForGame(umpire, game);
+        const conflict = hasAssignmentConflict(group, umpire.id, game.id, game);
+        const shouldHide = umpire.id !== currentId && (assignedToAnotherRole || unavailable || conflict);
+
+        if (shouldHide) return;
+
+        const selected = umpire.id === currentId ? " selected" : "";
+        const notes = [];
+
+        if (unavailable) notes.push("outside availability");
+        if (conflict) notes.push("already assigned");
+
+        const label = umpire.name + " - seniority " + (umpire.superiority || "3") + (notes.length ? " (" + notes.join(", ") + ")" : "");
+        options.push('<option value="' + umpire.id + '"' + selected + '>' + escapeHtml(label) + '</option>');
+      });
+
+      return options.join("");
+    }
+
+    function findOfficial(group, officialId) {
+      return (group.umpires || []).find(item => item.id === officialId) || null;
+    }
+
+    function sortedOfficialsBySeniority(officials) {
+      return officials.slice().sort((a, b) => {
+        const seniorityDifference = Number(b.superiority || 0) - Number(a.superiority || 0);
+        if (seniorityDifference !== 0) return seniorityDifference;
+        return String(a.name || "").localeCompare(String(b.name || ""));
+      });
+    }
+
+    function isOfficialAvailableForGame(official, game) {
+      const slots = official.availabilitySlots || [];
+      if (!slots.length || !game.date) return true;
+
+      return slots.some(slot => {
+        if (slot.date !== game.date) return false;
+        if (!game.time || (!slot.start && !slot.end)) return true;
+        if (slot.start && game.time < slot.start) return false;
+        if (slot.end && game.time > slot.end) return false;
+        return true;
+      });
+    }
+
+    function hasAssignmentConflict(group, officialId, currentGameId, currentGame) {
+      if (!officialId || !currentGame.date || !currentGame.time) return false;
+
+      return (group.games || []).some(game => {
+        if (game.id === currentGameId) return false;
+        if (game.date !== currentGame.date || game.time !== currentGame.time) return false;
+        return gameOfficialIds(game).includes(officialId);
+      });
+    }
+
+    function sortedGamesByField(games) {
+      return games.slice().sort((a, b) => {
+        return String(a.field || "Unlisted Field").localeCompare(String(b.field || "Unlisted Field"), undefined, { numeric: true }) ||
+          String(a.date || "").localeCompare(String(b.date || "")) ||
+          String(a.time || "").localeCompare(String(b.time || ""));
+      });
+    }
+
+    function groupGamesByField(games) {
+      return games.reduce((fieldGroups, game) => {
+        const field = game.field || "Unlisted Field";
+        if (!fieldGroups[field]) fieldGroups[field] = [];
+        fieldGroups[field].push(game);
+        return fieldGroups;
+      }, {});
+    }
+
+    function parseBulkGameLine(line) {
+      const parts = splitScheduleLine(line);
+
+      const dateIndex = parts.findIndex(part => Boolean(normalizeDate(part)));
+      const timeIndex = parts.findIndex(part => Boolean(normalizeTime(part)));
+      const fieldIndex = parts.findIndex(part => /field|court|diamond|complex|park|venue|location|site|rink|\b(?:fld|ct)\b/i.test(part));
+
+      const date = dateIndex >= 0 ? normalizeDate(parts[dateIndex]) : "";
+      const time = timeIndex >= 0 ? normalizeTime(parts[timeIndex]) : "";
+      const field = fieldIndex >= 0 ? parts[fieldIndex] : (parts[2] || "");
+
+      const remaining = parts.filter((_part, index) => {
+        return index !== dateIndex && index !== timeIndex && index !== fieldIndex;
+      });
+
+      let level = "";
+
+      if (remaining[0] && /(?:\d{1,2}u|varsity|jv|pool|bracket|division|championship|semi|quarter)/i.test(remaining[0])) {
+        level = remaining.shift();
+      }
+
+      const teamOne = remaining[0] || "Team 1";
+      const teamTwo = remaining[1] || "Team 2";
+
+      if (!level) level = remaining.slice(2).join(" ");
+
+      return {
+        date,
+        time,
+        field: field || "Field TBD",
+        teamOne,
+        teamTwo,
+        level
+      };
+    }
+
+    function splitScheduleLine(line) {
+      const tabParts = line.split("\t").map(cleanSchedulePart).filter(Boolean);
+      if (tabParts.length >= 4) return tabParts;
+
+      const commaParts = line.split(",").map(cleanSchedulePart).filter(Boolean);
+      if (commaParts.length >= 4) return commaParts;
+
+      const pipeParts = line.split("|").map(cleanSchedulePart).filter(Boolean);
+      if (pipeParts.length >= 4) return pipeParts;
+
+      return line.split(/\s{2,}/).map(cleanSchedulePart).filter(Boolean);
+    }
+
+    function cleanSchedulePart(value) {
+      return String(value || "").replace(/\s+/g, " ").trim();
+    }
+
+    function normalizeDate(value) {
+      const text = cleanSchedulePart(value);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+
+      const monthMatch = text.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+(\d{1,2})(?:,?\s+(\d{2,4}))?\b/i);
+      if (monthMatch) {
+        const monthNames = {
+          jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06",
+          jul: "07", aug: "08", sep: "09", sept: "09", oct: "10", nov: "11", dec: "12"
+        };
+
+        const monthKey = monthMatch[1].toLowerCase().startsWith("sept")
+          ? "sept"
+          : monthMatch[1].toLowerCase().slice(0, 3);
+
+        const year = monthMatch[3]
+          ? monthMatch[3].length === 2 ? "20" + monthMatch[3] : monthMatch[3]
+          : String(new Date().getFullYear());
+
+        return year + "-" + monthNames[monthKey] + "-" + monthMatch[2].padStart(2, "0");
+      }
+
+      const match = text.match(/\b(\d{1,2})[/-](\d{1,2})(?:[/-](\d{2,4}))?\b/);
+      if (!match) return "";
+
+      const year = match[3]
+        ? match[3].length === 2 ? "20" + match[3] : match[3]
+        : String(new Date().getFullYear());
+
+      return year + "-" + match[1].padStart(2, "0") + "-" + match[2].padStart(2, "0");
+    }
+
+    function normalizeTime(value) {
+      const text = cleanSchedulePart(value);
+      if (/\d{1,4}[/-]\d{1,2}[/-]?\d{0,4}/.test(text)) return "";
+      if (!/(\d{1,2}:\d{2}|\b\d{1,2}\s*(?:AM|PM)\b)/i.test(text)) return "";
+
+      const match = text.match(/\b(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?\b/i);
+      if (!match) return "";
+
+      let hour = Number(match[1]);
+      const minute = match[2] || "00";
+      const meridian = (match[3] || "").toUpperCase();
+
+      if (meridian === "PM" && hour < 12) hour += 12;
+      if (meridian === "AM" && hour === 12) hour = 0;
+      if (hour > 23) return "";
+
+      return String(hour).padStart(2, "0") + ":" + minute;
+    }
+
+    function exportMasterSchedule() {
+      const group = activeGroup();
+      if (!group) return;
+
+      const games = sortedGamesByField(group.games || []);
+      if (!games.length) {
+        setMessage("gameMessage", "Add games before exporting a master schedule.", "error");
+        return;
+      }
+
+      const headers = ["Field", "Date", "Time", "Level", "Team 1", "Team 2"].concat(CREW_ROLES.map(role => role.label));
+
+      const rows = games.map(game => {
+        const assignments = normalizeGameAssignments(game);
+        const roleNames = CREW_ROLES.map(role => {
+          const official = assignments[role.key] ? findOfficial(group, assignments[role.key]) : null;
+          return official ? official.name : "";
+        });
+
+        return [game.field, game.date, game.time, game.level, game.teamOne, game.teamTwo].concat(roleNames);
+      });
+
+      const csv = [headers].concat(rows).map(row => row.map(csvCell).join(",")).join("\r\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const link = document.createElement("a");
+
+      link.href = URL.createObjectURL(blob);
+      link.download = safeFileName(group.name || "master-schedule") + "-master-schedule.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function csvCell(value) {
+      return '"' + String(value || "").replaceAll('"', '""') + '"';
+    }
+
+    function safeFileName(value) {
+      return String(value || "schedule").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     }
 
     function formatAvailabilitySlot(slot) {
@@ -1135,7 +1240,7 @@
 
     function renderAvailabilityDraft() {
       document.getElementById("availabilityDraftList").innerHTML = pendingAvailability.length
-        ? pendingAvailability.map(function (slot, index) {
+        ? pendingAvailability.map((slot, index) => {
             return [
               '<div class="availability-row">',
               '<span>' + formatAvailabilitySlot(slot) + '</span>',
@@ -1148,9 +1253,31 @@
 
     function resetOfficialModal() {
       pendingAvailability = [];
+      editingOfficialId = "";
       document.getElementById("umpireForm").reset();
       document.getElementById("umpireSuperiority").value = "3";
+      document.getElementById("officialModalTitle").textContent = "Add Official";
       renderAvailabilityDraft();
+    }
+
+    function openOfficialEditor(officialId) {
+      const group = activeGroup();
+      if (!group) return;
+
+      const official = findOfficial(group, officialId);
+      if (!official) return;
+
+      editingOfficialId = official.id;
+      pendingAvailability = (official.availabilitySlots || []).map(slot => ({ ...slot }));
+
+      document.getElementById("officialModalTitle").textContent = "Edit Official";
+      document.getElementById("umpireName").value = official.name || "";
+      document.getElementById("umpireEmail").value = official.email || "";
+      document.getElementById("umpirePhone").value = official.phone || "";
+      document.getElementById("umpireSuperiority").value = official.superiority || "3";
+
+      renderAvailabilityDraft();
+      document.getElementById("addOfficialModal").classList.add("open");
     }
 
     function updateGroups() {
@@ -1166,7 +1293,7 @@
       element.textContent = text;
       element.className = "message show " + type;
 
-      setTimeout(function () {
+      setTimeout(() => {
         element.className = "message";
         element.textContent = "";
       }, 3000);
@@ -1185,9 +1312,8 @@
       return String(value || "").charAt(0).toUpperCase() + String(value || "").slice(1);
     }
 
-    document.getElementById("resetButton").addEventListener("click", function () {
+    document.getElementById("resetButton").addEventListener("click", () => {
       if (!confirm("Clear all saved dashboard data from this browser?")) return;
-
       localStorage.removeItem(STORAGE_KEY);
       groups = [];
       activeGroupId = "";
@@ -1196,25 +1322,45 @@
       route();
     });
 
-    document.getElementById("openCreateGroup").addEventListener("click", function () {
+    document.getElementById("openCreateGroup").addEventListener("click", () => {
       document.getElementById("createGroupModal").classList.add("open");
     });
 
-    document.getElementById("closeCreateGroup").addEventListener("click", function () {
+    document.getElementById("closeCreateGroup").addEventListener("click", () => {
       document.getElementById("createGroupModal").classList.remove("open");
     });
 
-    document.getElementById("openAddOfficial").addEventListener("click", function () {
+    document.getElementById("openAddOfficial").addEventListener("click", () => {
       resetOfficialModal();
       document.getElementById("addOfficialModal").classList.add("open");
     });
 
-    document.getElementById("closeAddOfficial").addEventListener("click", function () {
+    document.getElementById("closeAddOfficial").addEventListener("click", () => {
       document.getElementById("addOfficialModal").classList.remove("open");
       resetOfficialModal();
     });
 
-    document.getElementById("addAvailabilitySlot").addEventListener("click", function () {
+    document.getElementById("exportMasterSchedule").addEventListener("click", exportMasterSchedule);
+
+    document.getElementById("groupSearch").addEventListener("input", renderGroupsView);
+
+    document.getElementById("searchForm").addEventListener("submit", event => {
+      event.preventDefault();
+    });
+
+    document.getElementById("createdGroupsList").addEventListener("click", event => {
+      const card = event.target.closest("[data-group-id]");
+      if (!card) return;
+      window.location.hash = "#group/" + card.dataset.groupId;
+    });
+
+    document.getElementById("rosterList").addEventListener("click", event => {
+      const button = event.target.closest(".edit-official");
+      if (!button) return;
+      openOfficialEditor(button.dataset.officialId);
+    });
+
+    document.getElementById("addAvailabilitySlot").addEventListener("click", () => {
       const slot = {
         date: document.getElementById("availabilityDate").value,
         start: document.getElementById("availabilityStart").value,
@@ -1237,28 +1383,14 @@
       renderAvailabilityDraft();
     });
 
-    document.getElementById("availabilityDraftList").addEventListener("click", function (event) {
+    document.getElementById("availabilityDraftList").addEventListener("click", event => {
       const button = event.target.closest(".remove-availability");
       if (!button) return;
-
       pendingAvailability.splice(Number(button.dataset.index), 1);
       renderAvailabilityDraft();
     });
 
-    document.getElementById("groupSearch").addEventListener("input", renderGroupsView);
-
-    document.getElementById("searchForm").addEventListener("submit", function (event) {
-      event.preventDefault();
-    });
-
-    document.getElementById("createdGroupsList").addEventListener("click", function (event) {
-      const card = event.target.closest("[data-group-id]");
-      if (!card) return;
-
-      window.location.hash = "#group/" + card.dataset.groupId;
-    });
-
-    document.getElementById("createGroupForm").addEventListener("submit", function (event) {
+    document.getElementById("createGroupForm").addEventListener("submit", event => {
       event.preventDefault();
 
       try {
@@ -1274,9 +1406,7 @@
           reports: []
         };
 
-        if (!group.name || !group.sport) {
-          throw new Error("Group name and sport are required.");
-        }
+        if (!group.name || !group.sport) throw new Error("Group name and sport are required.");
 
         groups.unshift(group);
         activeGroupId = group.id;
@@ -1291,45 +1421,50 @@
       }
     });
 
-    document.getElementById("umpireForm").addEventListener("submit", function (event) {
+    document.getElementById("umpireForm").addEventListener("submit", event => {
       event.preventDefault();
 
       const group = activeGroup();
       if (!group) return;
 
       try {
-        const umpire = {
-          id: makeId(),
+        const wasEditing = Boolean(editingOfficialId);
+
+        const officialData = {
           groupId: group.id,
           name: document.getElementById("umpireName").value.trim(),
           email: document.getElementById("umpireEmail").value.trim(),
           phone: document.getElementById("umpirePhone").value.trim(),
-          contact: [
-            document.getElementById("umpireEmail").value.trim(),
-            document.getElementById("umpirePhone").value.trim()
-          ].filter(Boolean).join(" | "),
           availabilitySlots: pendingAvailability.slice(),
           availability: pendingAvailability.map(formatAvailabilitySlot).join("; "),
           superiority: document.getElementById("umpireSuperiority").value,
-          createdAt: new Date().toISOString()
+          updatedAt: new Date().toISOString()
         };
 
-        if (!umpire.name) {
-          throw new Error("Official name is required.");
+        if (!officialData.name) throw new Error("Official name is required.");
+
+        if (editingOfficialId) {
+          const existingOfficial = findOfficial(group, editingOfficialId);
+          if (!existingOfficial) throw new Error("Official profile was not found.");
+          Object.assign(existingOfficial, officialData);
+        } else {
+          group.umpires.push({
+            id: makeId(),
+            ...officialData,
+            createdAt: new Date().toISOString()
+          });
         }
 
-        group.umpires.push(umpire);
         updateGroups();
-
         document.getElementById("addOfficialModal").classList.remove("open");
         resetOfficialModal();
-        setMessage("umpireMessage", "Official added.", "success");
+        setMessage("umpireMessage", wasEditing ? "Official updated." : "Official added.", "success");
       } catch (error) {
         setMessage("officialModalMessage", error.message, "error");
       }
     });
 
-    document.getElementById("gameForm").addEventListener("submit", function (event) {
+    document.getElementById("gameForm").addEventListener("submit", event => {
       event.preventDefault();
 
       const group = activeGroup();
@@ -1345,19 +1480,17 @@
           teamOne: document.getElementById("teamOne").value.trim(),
           teamTwo: document.getElementById("teamTwo").value.trim(),
           level: document.getElementById("gameLevel").value.trim(),
-          umpireIds: selectedValues(document.getElementById("assignedUmpire")),
+          assignments: emptyAssignments(),
+          umpireIds: [],
           umpireId: "",
           source: "single",
           createdAt: new Date().toISOString()
         };
 
-        if (!game.teamOne || !game.teamTwo) {
-          throw new Error("Both teams are required.");
-        }
+        if (!game.teamOne || !game.teamTwo) throw new Error("Both teams are required.");
 
         group.games.push(game);
         updateGroups();
-
         event.target.reset();
         setMessage("gameMessage", "Game added.", "success");
       } catch (error) {
@@ -1365,7 +1498,7 @@
       }
     });
 
-    document.getElementById("bulkGameForm").addEventListener("submit", function (event) {
+    document.getElementById("bulkGameForm").addEventListener("submit", event => {
       event.preventDefault();
 
       const group = activeGroup();
@@ -1373,24 +1506,22 @@
 
       const games = document.getElementById("bulkGamesText").value
         .split(/\r?\n/)
-        .map(function (line) {
-          return line.trim();
-        })
+        .map(line => line.trim())
         .filter(Boolean)
-        .map(function (line) {
-          const parts = line.split(/\t|,/).map(function (part) {
-            return part.trim();
-          });
+        .filter(line => !/date/i.test(line) || !/time/i.test(line) || !/(field|venue|court|location|site)/i.test(line))
+        .map(line => {
+          const parsed = parseBulkGameLine(line);
 
           return {
             id: makeId(),
             groupId: group.id,
-            date: parts[0] || "",
-            time: parts[1] || "",
-            field: parts[2] || "",
-            teamOne: parts[3] || "Team 1",
-            teamTwo: parts[4] || "Team 2",
-            level: parts[5] || "",
+            date: parsed.date,
+            time: parsed.time,
+            field: parsed.field,
+            teamOne: parsed.teamOne,
+            teamTwo: parsed.teamTwo,
+            level: parsed.level,
+            assignments: emptyAssignments(),
             umpireIds: [],
             umpireId: "",
             source: "bulk",
@@ -1405,30 +1536,58 @@
 
       group.games.push(...games);
       updateGroups();
-
       event.target.reset();
       setMessage("bulkGameMessage", "Imported " + games.length + " games.", "success");
     });
 
-    document.getElementById("scheduleList").addEventListener("change", function (event) {
-      if (!event.target.classList.contains("game-assign")) return;
+    document.getElementById("scheduleList").addEventListener("change", event => {
+      if (!event.target.classList.contains("game-role-assign")) return;
 
       const group = activeGroup();
       if (!group) return;
 
-      const game = (group.games || []).find(function (item) {
-        return item.id === event.target.dataset.gameId;
-      });
-
+      const game = (group.games || []).find(item => item.id === event.target.dataset.gameId);
       if (!game) return;
 
-      game.umpireIds = selectedValues(event.target);
+      const assignments = normalizeGameAssignments(game);
+      const roleKey = event.target.dataset.role;
+      const selectedOfficialId = event.target.value;
+
+      if (selectedOfficialId) {
+        const official = findOfficial(group, selectedOfficialId);
+
+        const alreadyOnThisGame = Object.keys(assignments).some(key => {
+          return key !== roleKey && assignments[key] === selectedOfficialId;
+        });
+
+        if (alreadyOnThisGame) {
+          setMessage("gameMessage", "That official is already assigned to another role on this game.", "error");
+          renderGroupHome();
+          return;
+        }
+
+        if (official && !isOfficialAvailableForGame(official, game)) {
+          setMessage("gameMessage", "That official is outside their availability for this game.", "error");
+          renderGroupHome();
+          return;
+        }
+
+        if (hasAssignmentConflict(group, selectedOfficialId, game.id, game)) {
+          setMessage("gameMessage", "That official is already assigned to another game at this time.", "error");
+          renderGroupHome();
+          return;
+        }
+      }
+
+      assignments[roleKey] = selectedOfficialId;
+      game.umpireIds = gameOfficialIds(game);
       game.umpireId = game.umpireIds[0] || "";
+
       updateGroups();
     });
 
-    document.querySelectorAll(".report-form").forEach(function (form) {
-      form.addEventListener("submit", function (event) {
+    document.querySelectorAll(".report-form").forEach(form => {
+      form.addEventListener("submit", event => {
         event.preventDefault();
 
         const group = activeGroup();
@@ -1450,13 +1609,12 @@
 
         group.reports.unshift(report);
         updateGroups();
-
         form.reset();
         setMessage("reportMessage", "Report saved.", "success");
       });
     });
 
-    document.getElementById("eventForm").addEventListener("submit", function (event) {
+    document.getElementById("eventForm").addEventListener("submit", event => {
       event.preventDefault();
 
       const group = activeGroup();
@@ -1480,7 +1638,6 @@
 
       group.events.push(groupEvent);
       updateGroups();
-
       event.target.reset();
       setMessage("eventMessage", "Event added.", "success");
     });
