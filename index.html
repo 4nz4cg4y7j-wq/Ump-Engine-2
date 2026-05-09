@@ -774,6 +774,34 @@
       box-shadow: var(--shadow);
     }
 
+    .schedule-view-card {
+      width: min(100%, 1180px);
+    }
+
+    .schedule-view-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .schedule-view-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .schedule-view-actions {
+      justify-content: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .schedule-view-content {
+      display: grid;
+      gap: 16px;
+    }
+
     .modal-card h2 {
       margin: 0 0 16px;
       text-transform: uppercase;
@@ -881,6 +909,57 @@
     @media (max-width: 560px) {
       .btn {
         width: 100%;
+      }
+    }
+
+    @media print {
+      body.printing-schedule > :not(#scheduleViewModal) {
+        display: none !important;
+      }
+
+      body.printing-schedule,
+      body.printing-schedule #scheduleViewModal {
+        background: #fff !important;
+        color: #000 !important;
+      }
+
+      body.printing-schedule #scheduleViewModal {
+        position: static !important;
+        display: block !important;
+        padding: 0 !important;
+      }
+
+      body.printing-schedule .schedule-view-card {
+        width: 100% !important;
+        max-height: none !important;
+        overflow: visible !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        color: #000 !important;
+      }
+
+      body.printing-schedule .schedule-view-actions,
+      body.printing-schedule .modal-actions,
+      body.printing-schedule .need-line {
+        display: none !important;
+      }
+
+      body.printing-schedule .item-card,
+      body.printing-schedule .division-heading,
+      body.printing-schedule .field-heading {
+        break-inside: avoid;
+        color: #000 !important;
+        background: #fff !important;
+        border-color: #999 !important;
+      }
+
+      body.printing-schedule select {
+        border: 0 !important;
+        color: #000 !important;
+        background: transparent !important;
+        appearance: none;
       }
     }
   </style>
@@ -1006,7 +1085,7 @@
 
       <section class="panel group-command-panel">
         <div class="inline-actions command-actions">
-          <button class="btn" id="exportMasterSchedule" type="button">Export Master Schedule</button>
+          <button class="btn" id="openScheduleView" type="button">View Schedule</button>
           <button class="btn" id="runAutoAssign" type="button">Auto Assign</button>
           <button class="btn warning" id="reassignAutoAssign" type="button">Reassign Everything</button>
         </div>
@@ -1367,6 +1446,25 @@
           <button class="btn" type="submit">Save Preferences</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="modal" id="scheduleViewModal" aria-hidden="true">
+    <div class="modal-card schedule-view-card">
+      <div class="schedule-view-head">
+        <div>
+          <h2 id="scheduleViewTitle">Schedule View</h2>
+          <p>Review assignments, make changes, print the schedule, or export it.</p>
+        </div>
+        <button class="btn outline" id="closeScheduleView" type="button">Close</button>
+      </div>
+      <div class="inline-actions schedule-view-actions">
+        <button class="btn" id="printScheduleView" type="button">Print Schedule</button>
+        <button class="btn" id="exportExcelFromView" type="button">Export Excel</button>
+        <button class="btn" id="exportGoogleSheetFromView" type="button">Export Google Sheet</button>
+      </div>
+      <div id="scheduleViewMessage" class="message" aria-live="polite"></div>
+      <div id="scheduleViewContent" class="schedule-view-content"></div>
     </div>
   </div>
 
@@ -1879,10 +1977,14 @@
     }
 
     function renderSchedule(group) {
+      document.getElementById("scheduleList").innerHTML = scheduleAssignmentMarkup(group);
+    }
+
+    function scheduleAssignmentMarkup(group) {
       const games = sortedGamesByField(group, group.games || []);
       const divisionGroups = groupGamesByDivision(group, games);
 
-      document.getElementById("scheduleList").innerHTML = games.length
+      return games.length
         ? divisionGroups.map(function (divisionGroup) {
             return [
               '<div class="division-heading">',
@@ -2773,6 +2875,29 @@
       return String(hour).padStart(2, "0") + ":" + minute;
     }
 
+    function openScheduleView() {
+      const group = activeGroup();
+      if (!group) return;
+      renderScheduleView(group);
+      document.getElementById("scheduleViewModal").classList.add("open");
+    }
+
+    function renderScheduleView(group) {
+      document.getElementById("scheduleViewTitle").textContent = (group.name || "Group") + " Schedule View";
+      document.getElementById("scheduleViewContent").innerHTML = scheduleAssignmentMarkup(group);
+    }
+
+    function printScheduleView() {
+      const group = activeGroup();
+      if (!group) return;
+      renderScheduleView(group);
+      document.body.classList.add("printing-schedule");
+      window.print();
+      setTimeout(function () {
+        document.body.classList.remove("printing-schedule");
+      }, 500);
+    }
+
     function exportMasterSchedule() {
       const group = activeGroup();
       if (!group) return;
@@ -2791,6 +2916,77 @@
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = safeFileName(group.name || "master-schedule") + "-master-schedule.xls";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function exportGoogleSheetSchedule() {
+      const group = activeGroup();
+      if (!group) return;
+      const games = (group.games || []).slice().sort(function (a, b) {
+        return String(a.date || "").localeCompare(String(b.date || "")) ||
+          String(a.time || "").localeCompare(String(b.time || "")) ||
+          String(fieldNameForGame(group, a)).localeCompare(String(fieldNameForGame(group, b)), undefined, { numeric: true });
+      });
+      if (!games.length) {
+        setMessage("scheduleViewMessage", "Add games before exporting a Google Sheets file.", "error");
+        return;
+      }
+
+      const csv = buildGoogleSheetCsv(group, games);
+      downloadTextFile(csv, safeFileName(group.name || "schedule") + "-google-sheets.csv", "text/csv;charset=utf-8");
+    }
+
+    function buildGoogleSheetCsv(group, games) {
+      const rows = [["Date", "Time", "Field", "Division", "Game", "Plate", "U1", "U2", "U3", "U4", "U5"]];
+      uniqueGameDates(games).forEach(function (dateKey) {
+        fieldNamesForDate(group, games.filter(function (game) {
+          return (game.date || "Date TBD") === dateKey;
+        })).forEach(function (fieldName) {
+          games.filter(function (game) {
+            return (game.date || "Date TBD") === dateKey && fieldNameForGame(group, game) === fieldName;
+          }).sort(function (a, b) {
+            return String(a.time || "").localeCompare(String(b.time || ""));
+          }).forEach(function (game) {
+            const assignments = normalizeGameAssignments(game);
+            rows.push([
+              formatDateDisplay(game.date || "Date TBD"),
+              formatTimeStandard(game.time),
+              fieldName,
+              divisionLabel(group, game.divisionId),
+              (game.teamOne || "Team 1") + " vs " + (game.teamTwo || "Team 2"),
+              officialNameForExport(group, assignments.plate),
+              officialNameForExport(group, assignments.u1),
+              officialNameForExport(group, assignments.u2),
+              officialNameForExport(group, assignments.u3),
+              officialNameForExport(group, assignments.u4),
+              officialNameForExport(group, assignments.u5)
+            ]);
+          });
+        });
+      });
+      return rows.map(function (row) {
+        return row.map(csvEscape).join(",");
+      }).join("\r\n");
+    }
+
+    function officialNameForExport(group, officialId) {
+      const official = officialId ? findOfficial(group, officialId) : null;
+      return official ? official.name : "";
+    }
+
+    function csvEscape(value) {
+      const text = String(value ?? "");
+      return '"' + text.replaceAll('"', '""') + '"';
+    }
+
+    function downloadTextFile(content, fileName, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -3322,7 +3518,13 @@
       showOfficialStep(currentOfficialStep + 1);
     });
 
-    document.getElementById("exportMasterSchedule").addEventListener("click", exportMasterSchedule);
+    document.getElementById("openScheduleView").addEventListener("click", openScheduleView);
+    document.getElementById("closeScheduleView").addEventListener("click", function () {
+      document.getElementById("scheduleViewModal").classList.remove("open");
+    });
+    document.getElementById("printScheduleView").addEventListener("click", printScheduleView);
+    document.getElementById("exportExcelFromView").addEventListener("click", exportMasterSchedule);
+    document.getElementById("exportGoogleSheetFromView").addEventListener("click", exportGoogleSheetSchedule);
 
     document.getElementById("openAccountPreferences").addEventListener("click", function () {
       openPreferenceEditor("account");
@@ -3704,15 +3906,18 @@
       }
     });
 
-    document.getElementById("scheduleList").addEventListener("change", function (event) {
+    document.getElementById("scheduleList").addEventListener("change", handleAssignmentChange);
+    document.getElementById("scheduleViewContent").addEventListener("change", handleAssignmentChange);
+
+    function handleAssignmentChange(event) {
+      if (!event.target.classList.contains("game-role-assign")) return;
+      const messageId = event.currentTarget.id === "scheduleViewContent" ? "scheduleViewMessage" : "gameMessage";
       const group = activeGroup();
       if (!group) return;
       const game = (group.games || []).find(function (item) {
         return item.id === event.target.dataset.gameId;
       });
       if (!game) return;
-
-      if (!event.target.classList.contains("game-role-assign")) return;
 
       const assignments = normalizeGameAssignments(game);
       const roleKey = event.target.dataset.role;
@@ -3728,25 +3933,25 @@
         });
 
         if (alreadyOnThisGame) {
-          setMessage("gameMessage", "That official is already assigned to another role on this game.", "error");
+          setMessage(messageId, "That official is already assigned to another role on this game.", "error");
           renderGroupHome();
           return;
         }
 
         if (official && !officialCanWorkRole(official, role.type)) {
-          setMessage("gameMessage", "That official is not approved for this position.", "error");
+          setMessage(messageId, "That official is not approved for this position.", "error");
           renderGroupHome();
           return;
         }
 
         if (official && !isOfficialAvailableForGame(official, game)) {
-          setMessage("gameMessage", "That official has an unavailable block for this game.", "error");
+          setMessage(messageId, "That official has an unavailable block for this game.", "error");
           renderGroupHome();
           return;
         }
 
         if (hasAssignmentConflict(group, selectedOfficialId, game.id, game)) {
-          setMessage("gameMessage", "That official is already assigned to an overlapping time slot.", "error");
+          setMessage(messageId, "That official is already assigned to an overlapping time slot.", "error");
           renderGroupHome();
           return;
         }
@@ -3756,7 +3961,11 @@
       game.umpireIds = gameOfficialIds(game);
       game.umpireId = game.umpireIds[0] || "";
       updateGroups();
-    });
+      if (document.getElementById("scheduleViewModal").classList.contains("open")) {
+        renderScheduleView(group);
+        setMessage("scheduleViewMessage", "Assignment updated.", "success");
+      }
+    }
 
     document.getElementById("callOutForm").addEventListener("submit", function (event) {
       event.preventDefault();
